@@ -1,0 +1,185 @@
+`timescale 1ns/1ps
+
+module Round_robin_arbiter_fixed(
+  input clk,
+  input reset ,
+  input [3:0]req ,
+  output  reg [3:0] out 
+);
+  reg [2:0] present_state;
+  reg [2:0] next_state ;
+  parameter s_initial = 3'b000;
+  parameter s0 = 3'b001;
+  parameter s1 = 3'b010;
+  parameter s2 = 3'b011;
+  parameter s3 = 3'b100;
+ 
+  always @( posedge clk or negedge reset)
+    begin
+      if(!reset)
+      present_state <= s_initial;
+     else 
+       present_state <= next_state;
+    end
+ 
+  always @(*)
+    begin
+      case(present_state)
+          s_initial : begin
+                      if(req[0])
+                        begin
+                          next_state = s0;
+                        end
+                      else if(req[1])
+                        begin
+                          next_state = s1;
+                        end
+                      else if(req[2])
+                        begin
+                          next_state = s2;
+                        end
+                      else if(req[3])
+                        begin
+                          next_state = s3;
+                        end
+                      else
+                        begin
+                          next_state=s_initial;
+                        end
+                     end
+  
+                s0 : begin
+                  if(req[1])
+                        begin
+                          next_state = s1;
+                        end
+                  else if(req[2])
+                        begin
+                          next_state = s2;
+                        end
+                  else if(req[3])
+                        begin
+                          next_state = s3;
+                        end
+                  else if(req[0])
+                        begin
+                          next_state = s0;
+                        end
+                      else
+                        begin
+                          next_state=s_initial;
+                        end
+                     end
+        
+        
+              s1 : begin
+                if(req[2])
+                        begin
+                          next_state = s2;
+                        end
+                else if(req[3])
+                        begin
+                          next_state = s3;
+                        end
+                else if(req[0])
+                        begin
+                          next_state = s0;
+                        end
+                else if(req[1])
+                        begin
+                          next_state = s1;
+                        end
+                      else
+                        begin
+                          next_state=s_initial;
+                        end
+                     end
+        
+        
+              s2 : begin
+                 if(req[3])
+                        begin
+                          next_state = s3;
+                        end
+                 else if(req[0])
+                        begin
+                          next_state = s0;
+                        end
+                 else if(req[1])
+                        begin
+                          next_state = s1;
+                        end
+                 else if(req[2])
+                        begin
+                          next_state = s2;
+                        end
+                      else
+                        begin
+                          next_state=s_initial;
+                        end
+                     end
+              s3 : begin
+                      if(req[0])
+                        begin
+                          next_state = s0;
+                        end
+                      else if(req[1])
+                        begin
+                          next_state = s1;
+                        end
+                      else if(req[2])
+                        begin
+                          next_state = s2;
+                        end
+                      else if(req[3])
+                        begin
+                          next_state = s3;
+                        end
+                      else
+                        begin
+                          next_state=s_initial;
+                        end
+                     end
+              default : begin
+                      if(req[0])
+                        begin
+                          next_state = s0;
+                        end
+                      else if(req[1])
+                        begin
+                          next_state = s1;
+                        end
+                      else if(req[2])
+                        begin
+                          next_state = s2;
+                        end
+                      else if(req[3])
+                        begin
+                          next_state = s3;
+                        end
+                      else
+                        begin
+                          next_state=s_initial;
+                        end
+                     end
+          endcase
+        end
+  
+  always @(*)
+    begin
+      case(present_state)
+        
+        s0 : begin out = 4'b0001; end
+        s1 : begin out = 4'b0010; end
+        s2 : begin out = 4'b0100; end
+        s3 : begin out = 4'b1000; end
+        default : begin out = 4'b0000; end
+       
+      endcase
+      
+    end
+  
+endmodule
+  
+  
+ 
